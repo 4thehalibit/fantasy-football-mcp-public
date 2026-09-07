@@ -42,6 +42,14 @@ from .draft_handlers import (
 # Analytics handlers (minimal dependencies)
 from .analytics_handlers import handle_ff_analyze_reddit_sentiment
 
+# Sleeper handlers (no dependencies, no Yahoo auth required)
+from .sleeper_handlers import (
+    handle_ff_sleeper_nfl_state,
+    handle_ff_sleeper_player,
+    handle_ff_sleeper_rankings,
+    handle_ff_sleeper_trending,
+)
+
 
 def inject_roster_dependencies(**deps):
     """Inject dependencies needed by roster handlers.
@@ -139,6 +147,11 @@ __all__ = [
     "handle_ff_analyze_draft_state",
     # Analytics handlers (extracted, minimal dependencies)
     "handle_ff_analyze_reddit_sentiment",
+    # Sleeper handlers (no dependencies, no Yahoo auth required)
+    "handle_ff_sleeper_trending",
+    "handle_ff_sleeper_rankings",
+    "handle_ff_sleeper_player",
+    "handle_ff_sleeper_nfl_state",
     # Injection functions
     "inject_roster_dependencies",
     "inject_matchup_dependencies",

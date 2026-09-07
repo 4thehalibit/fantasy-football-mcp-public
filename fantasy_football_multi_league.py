@@ -50,6 +50,10 @@ from src.handlers import (
     handle_ff_get_teams,
     handle_ff_get_waiver_wire,
     handle_ff_refresh_token,
+    handle_ff_sleeper_nfl_state,
+    handle_ff_sleeper_player,
+    handle_ff_sleeper_rankings,
+    handle_ff_sleeper_trending,
     inject_draft_dependencies,
     inject_league_helpers,
     inject_matchup_dependencies,
@@ -838,6 +842,102 @@ async def list_tools() -> list[Tool]:
                 "required": [],
             },
         ),
+        Tool(
+            name="ff_sleeper_trending",
+            description=(
+                "Get players most added or dropped across Sleeper leagues. "
+                "Uses Sleeper's public API - works without Yahoo API access."
+            ),
+            inputSchema={
+                "type": "object",
+                "properties": {
+                    "add_drop": {
+                        "type": "string",
+                        "description": "'add' for most added, 'drop' for most dropped",
+                        "enum": ["add", "drop"],
+                        "default": "add",
+                    },
+                    "hours": {
+                        "type": "integer",
+                        "description": "Lookback window in hours (24 or 48)",
+                        "default": 24,
+                    },
+                    "limit": {
+                        "type": "integer",
+                        "description": "Number of players to return (default: 25)",
+                        "default": 25,
+                    },
+                    "position": {
+                        "type": "string",
+                        "description": "Position filter (QB, RB, WR, TE, K, DEF, or 'all')",
+                        "enum": ["QB", "RB", "WR", "TE", "K", "DEF", "all"],
+                        "default": "all",
+                    },
+                },
+                "required": [],
+            },
+        ),
+        Tool(
+            name="ff_sleeper_rankings",
+            description=(
+                "Get tiered position rankings for draft prep and start/sit calls. "
+                "Uses Sleeper's public API - works without Yahoo API access."
+            ),
+            inputSchema={
+                "type": "object",
+                "properties": {
+                    "position": {
+                        "type": "string",
+                        "description": "Position to rank",
+                        "enum": ["QB", "RB", "WR", "TE", "K", "DEF"],
+                    },
+                    "limit": {
+                        "type": "integer",
+                        "description": "Number of players to return (default: 25, max: 50)",
+                        "default": 25,
+                    },
+                    "week": {
+                        "type": "integer",
+                        "description": "Week number (optional)",
+                    },
+                },
+                "required": ["position"],
+            },
+        ),
+        Tool(
+            name="ff_sleeper_player",
+            description=(
+                "Look up a player on Sleeper with injury status and expert advice. "
+                "Uses Sleeper's public API - works without Yahoo API access."
+            ),
+            inputSchema={
+                "type": "object",
+                "properties": {
+                    "player_name": {
+                        "type": "string",
+                        "description": "Player name (e.g., 'Ja'Marr Chase')",
+                    },
+                    "week": {
+                        "type": "integer",
+                        "description": "Week number for advice context (optional)",
+                    },
+                    "include_advice": {
+                        "type": "boolean",
+                        "description": "Include expert advice analysis (default: true)",
+                        "default": True,
+                    },
+                },
+                "required": ["player_name"],
+            },
+        ),
+        Tool(
+            name="ff_sleeper_nfl_state",
+            description=(
+                "Get the current NFL week, season, and season type. "
+                "Uses Sleeper's public API - works without Yahoo API access."
+            ),
+            inputSchema={"type": "object", "properties": {}, "required": []},
+        ),
     ]
 
     # Add draft tools if available
@@ -940,6 +1040,10 @@ TOOL_HANDLERS: dict[str, Callable[[dict], Awaitable[dict]]] = {
     "ff_get_draft_recommendation": handle_ff_get_draft_recommendation,
     "ff_analyze_draft_state": handle_ff_analyze_draft_state,
     "ff_analyze_reddit_sentiment": handle_ff_analyze_reddit_sentiment,
+    "ff_sleeper_trending": handle_ff_sleeper_trending,
+    "ff_sleeper_rankings": handle_ff_sleeper_rankings,
+    "ff_sleeper_player": handle_ff_sleeper_player,
+    "ff_sleeper_nfl_state": handle_ff_sleeper_nfl_state,
 }
 
 
